@@ -10,4 +10,5 @@ dependencies:
   - urllib
   - pyrte_rrtmgp
   - h5netcdf
+  - metpy
   
