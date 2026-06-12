@@ -4,6 +4,15 @@ import metpy.calc as mpcalc
 from   metpy.units import units
 import metpy.constants as mpconst
 
+from pyrte_rrtmgp.rrtmgp_data_files import (
+    CloudOpticsFiles,
+    GasOpticsFiles,
+)
+from pyrte_rrtmgp import rte
+from pyrte_rrtmgp.rrtmgp import GasOptics
+
+OUTPUT_FILE = "rce-states.nc"
+
 def get_pressure_grids(surface_pressure=1000e2, top_pressure=1, num=128):
     r"""Create matching pressures at full-levels and half-levels.
 
@@ -75,9 +84,16 @@ def construct_profile(ps = 1000e2, rh = 0.5,
                       temp_layer = (["layer"], Tlay),
                       temp_level = (["level"], Tlev),
                       h2o  = (["layer"], h2o_vmr),
-                      surface_temperature   = ([], Ts),
+                      o3  = (["layer"], \
+                        3.6478 * (play*0.01)**0.83209 \
+                        * np.exp(-(play*0.01) / 11.3515) \
+                        * 1e-6), 
+                      surface_temperature = ([], Ts),
                       ps   = ([], ps), 
                       rh   = ([], rh),
+                      surface_emissivity = ([], 1.),
+                      surface_albedo = ([], 0.),
+                      solar_zenith_angle = ([], 0.),
                 ),
             ) 
     if gas_concs is not None:
@@ -86,41 +102,41 @@ def construct_profile(ps = 1000e2, rh = 0.5,
 
     return  ds
 
-base = construct_profile(Ts = 295)
-# 
-# Concentrations of gases (other than water) required by RRTMGP
-#
 gas_concs = \
     {"co2": 428e-6, 
-     "o3": 3.6478 * (base.pres_layer*0.01)**0.83209 * np.exp(-(base.pres_layer*0.01) / 11.3515) * 1e-6, 
      "ch4": 1.94e-6, 
      "n2o": 0.339e-6,
-     "cfc11": 216e-12,
-     "cfc12": 480e-12,
+     "n2": 0.7808,
      "o2": 0.2095, 
      "co": 0,
      }
 
-g = xr.concat([construct_profile(Ts = Ts, gas_concs = gas_concs) for Ts in np.arange(273, 305)], 
+f = xr.concat([construct_profile(Ts = Ts, gas_concs = gas_concs) for Ts in np.arange(273, 305)], 
           dim = "col")
 
 ####
 # Testing 
 ###
-from pyrte_rrtmgp.rrtmgp_data_files import (
-    CloudOpticsFiles,
-    GasOpticsFiles,
-)
-from pyrte_rrtmgp import rte
-from pyrte_rrtmgp.rrtmgp import GasOptics
-
 gas_optics_lw = GasOptics(
-    gas_optics_file=GasOpticsFiles.LW_G256
+    gas_optics_file=GasOpticsFiles.LW_G256, 
 )
 gas_optics_sw = GasOptics(
-    gas_optics_file=GasOpticsFiles.SW_G224
+    gas_optics_file=GasOpticsFiles.SW_G224,
 )
 
 
-gas_optics_lw.compute(g)
+fluxes = xr.merge([
+    xr.merge([
+        gas_optics_lw.compute(f, 
+            add_to_input = False), 
+        f.surface_emissivity, 
+    ]).rte.solve(add_to_input = False),  
+    xr.merge([
+        gas_optics_sw.compute(f, 
+            add_to_input = False), 
+        f.surface_albedo, 
+        f.solar_zenith_angle, 
+    ]).rte.solve(add_to_input = False)
+]) 
 
+f.to_netcdf(OUTPUT_FILE, engine = "h5netcdf",)
