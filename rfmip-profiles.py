@@ -10,7 +10,7 @@ from pyrte_rrtmgp.rrtmgp import GasOptics
 INPUT_FILE = "https://github.com/earth-system-radiation/rrtmgp-data/raw/refs/heads/main/" +\
              "examples/rfmip-clear-sky/inputs/" + \
              "multiple_input4MIPs_radiation_RFMIP_UColorado-RFMIP-1-2_none.nc"
-LOCAL_FILE = "rfmip_esgf.nc"
+LOCAL_FILE = "rfmip_from_esgf.nc"
 OUTPUT_FILE = "rfmip-states.nc"
 
 urllib.request.urlretrieve(INPUT_FILE, LOCAL_FILE)
@@ -32,7 +32,7 @@ state_vars = ["pres_layer", "pres_level",
               "temp_layer", "temp_level", 
               "surface_temperature", "surface_emissivity", "surface_albedo", 
               "solar_zenith_angle", 
-               "col", "variant",]
+              "col", "variant",]
 for v in state_vars: var_list.append(v) 
 
 f = xr.open_dataset(LOCAL_FILE, decode_cf=False)
@@ -49,7 +49,8 @@ f = f.rename_dims({"site":"col", "expt":"variant"}).\
                  "nitrous_oxide":"n2o", 
                  "oxygen":"n2", 
                  "nitrogen":"o2", 
-                })
+                }). \
+    drop_attrs()
 
 f = f.drop_vars([v for v in f.variables if v not in var_list])
 

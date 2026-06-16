@@ -1,10 +1,11 @@
 import xarray as xr
 import pyrte_rrtmgp.rte as rte
 from pyrte_rrtmgp.rrtmgp.data_files import (
-    CloudOpticsFiles,
     GasOpticsFiles,
 )
 from pyrte_rrtmgp.rrtmgp import GasOptics
+
+FILE_LIST = ["rfmip-states.nc", "rce-states.nc", "ckdmip-states.nc"]
 
 gas_optics_lw = GasOptics(
     gas_optics_file=GasOpticsFiles.LW_G256
@@ -13,7 +14,10 @@ gas_optics_sw = GasOptics(
     gas_optics_file=GasOpticsFiles.SW_G224
 )
 
-FILE_LIST = ["rfmip-states.nc", "rce-states.nc", "ckdmip-states.nc"]
+#
+# Open each set of profiles in turn, 
+#   see if fluxes can be computed from the gas optics
+#
 for f in FILE_LIST:
     print(f"working on {f}")
     atmosphere = xr.open_dataset(f, engine="netcdf4")

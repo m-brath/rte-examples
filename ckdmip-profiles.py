@@ -13,10 +13,9 @@ file_list = [f"ckdmip_evaluation{s}_concentrations_{v}.nc"
 	for v in ["present", "preindustrial", "future", "glacialmax"]
 	for s in [1,2]]
 
-if(False):
-	url = "https://aux.ecmwf.int/ecpds/home/ckdmip/concentrations/"
-	for f in file_list:
-		urllib.request.urlretrieve(url + f, f)
+url = "https://aux.ecmwf.int/ecpds/home/ckdmip/concentrations/"
+for f in file_list:
+	urllib.request.urlretrieve(url + f, f)
 
 f = xr.open_mfdataset(file_list, 
 				concat_dim = "variant", 
