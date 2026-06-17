@@ -7,7 +7,6 @@ channels:
   - nodefaults
 dependencies:
   - python >=3.11,<3.15
-  - urllib
   - pooch
   - pyrte_rrtmgp >=0.2.5
   - netcdf4
