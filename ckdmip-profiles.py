@@ -1,23 +1,25 @@
 import sys 
 import urllib.request
 import xarray as xr
+from .pooch-config import list_files
 
 from pyrte_rrtmgp.rrtmgp.data_files import (
     GasOpticsFiles,
 )
 from pyrte_rrtmgp.rrtmgp import GasOptics
 
+fido = pooch.create(
+	path=pooch.os_cache("rte-examples"),
+	base_url="https://aux.ecmwf.int/ecpds/home/ckdmip/concentrations/",
+)
+fido.load_registry("./rte-examples-registry.txt",)
+
+def list_files(pattern):
+	return [fido.fetch(n) for n in fido.registry.keys() if pattern in n]
+
 OUTPUT_FILE = "ckdmip-states.nc"
 
-file_list = [f"ckdmip_evaluation{s}_concentrations_{v}.nc"
-	for v in ["present", "preindustrial", "future", "glacialmax"]
-	for s in [1,2]]
-
-url = "https://aux.ecmwf.int/ecpds/home/ckdmip/concentrations/"
-for f in file_list:
-	urllib.request.urlretrieve(url + f, f)
-
-f = xr.open_mfdataset(file_list, 
+f = xr.open_mfdataset(list_files("ckdmip"), 
 				concat_dim = "variant", 
 				combine='nested', 
 				engine="netcdf4").\
