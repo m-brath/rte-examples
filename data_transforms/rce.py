@@ -104,7 +104,7 @@ gas_concs = \
      "co": 0,
      }
 
-f = xr.concat([construct_profile(Ts = Ts, gas_concs = gas_concs) for Ts in np.arange(273, 305)], 
-          dim = "col")
+def create_files():
+    return xr.concat([construct_profile(Ts = Ts, gas_concs = gas_concs) for Ts in np.arange(273, 305)], 
+              dim = "col")
 
-f.to_netcdf(OUTPUT_FILE, engine = "netcdf4",)

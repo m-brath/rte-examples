@@ -24,5 +24,5 @@ as required by RRTMGP
 ## Use
 
 - `environment.yml` can be used to set up a virtual environment with `mamba`
-- each `*-profiles.py` script downloads and transfoms data from a single source 
+- `transform_data.py` downloads source data and produces homogenized files
 - `driver.py` reads each transformed file and computes fluxes with pyRTE and RRTMGP
