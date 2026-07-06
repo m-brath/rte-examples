@@ -61,6 +61,6 @@ def transform_files():
 
     f = f.drop_attrs()
 
-    return f.drop_vars([v for v in f.variables if v not in var_list])
+    return f.drop_vars([v for v in f.variables if v not in var_list]).transpose("variant", "layer", "level", "col")
 
 

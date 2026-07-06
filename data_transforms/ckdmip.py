@@ -59,4 +59,4 @@ def transform_files():
 							   f.pres_layer, 
 							   gas_optics_lw.press_min + sys.float_info.epsilon)
 
-	return f 
+	return f.transpose("variant", "layer", "level", "col") 
