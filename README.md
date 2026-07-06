@@ -14,12 +14,16 @@ https://confluence.ecmwf.int/display/CKDMIP/CKDMIP%3A+Correlated+K-Distribution+
 
 ## Data format
 Data roughly follow the conventions used in [pyRTE](https://github.com/earth-system-radiation/pyRTE-RRTMGP)
-- profiles are  `col` and optionally `variant`
-- vertical dimensions are `layer` and `level`. There is one more `level` than `layer. 
 - state variables are `pres_layer`, `pres_level`, `temp_layer`, `temp_level`, `surface_temperature`
-- composition variables are the molar mixing ratios of `h2o`, `co2`, `ch4`, `n2o`, `co`, `n2`, `o2`
-as required by RRTMGP
-- radiative variables are `surface_emissivity` and `surface_albedo` (both broadband) and `solar_zenith_angle`
+- vertical dimensions are `layer` and `level`. There is one more `level` than `layer. 
+- state variables, `h2o`, and `o3` depend on  `col`, `layer`/`level`, and  `variant`
+- boundary conditions are `surface_emissivity` and `surface_albedo` (both broadband) 
+  and `solar_zenith_angle`; these depend on `col` and `variant`
+- composition variables are the molar mixing ratios of `h2o` and `o3` (spatially resolved as above). 
+   Variables `co2`, `ch4`, `n2o`,  co`, `n2`, `o2` are required as determined by RRTMGP
+- any variable depending on `variant` is treated like a gas concentration (with the exception of `expt_names`)
+- `total_solar_irradiance` is provided as a scalar
+- Dimensions are ordered `col`, `layer`, `variant` (in Fortran notation) i.e. `col`s are contiguous in memory 
 
 ## Use
 
