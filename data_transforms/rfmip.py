@@ -47,6 +47,10 @@ def transform_files():
                      "oxygen":"n2", 
                      "nitrogen":"o2",                     
                     })
+    f["pres_layer"] = f["pres_layer"].broadcast_like(f.temp_layer)
+    f["pres_level"] = f["pres_level"].broadcast_like(f.temp_level)
+    for v in ["solar_zenith_angle", "surface_albedo", "surface_emissivity"]:
+      f[v] = f[v].broadcast_like(f.temp_layer.isel(layer=0))
 
     def _parse_units_scalar(units):
         try:

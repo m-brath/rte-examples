@@ -37,16 +37,19 @@ def transform_files():
 	f["surface_temperature"] = f.temp_level.isel(level=-1)
 	f["expt_names"] = xr.DataArray(data = [n.split("/")[-1] for n in list_files("ckdmip")], 
 		dims = ["variant"])
-	f["co"] = 0. 
-	f["surface_emissivity"] = 1.
-	f["surface_albedo"] = 0. 
-	f["solar_zenith_angle"] = 0. 
+	# 
+	# Set concentrations of well-mixed gases to the vertical mean
+	
+	for g in ["co2", "ch4", "n2o", "n2", "o2"]: 
+		f[g] = f[g].mean(dim=["layer", "col"])
+	f["co"] = xr.DataArray(data = 0.).broadcast_like(f["co2"])
+	f["surface_emissivity"] =  xr.DataArray(data = 1.).broadcast_like(f["surface_temperature"])
+	f["surface_albedo"] = xr.DataArray(data = 0.).broadcast_like(f["surface_temperature"])
+	f["solar_zenith_angle"] = xr.DataArray(data = 0.).broadcast_like(f["surface_temperature"]) 
 	f["total_solar_irradiance"] = mpconst.earth_solar_irradiance.m
 	#
 	# pyRTE logic for computing top_at_1 is fragile - use only one set of pressures across variants
 	#
-	f["pres_layer"] = f["pres_layer"].isel(variant=0)
-	f["pres_level"] = f["pres_level"].isel(variant=0)
 
 	####
 	# Limit pressures to those covered by RRTMGP

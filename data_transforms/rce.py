@@ -94,17 +94,28 @@ def construct_profile(ps = 1000e2, rh = 0.5,
 
     return  ds
 
-gas_concs = \
-    {"co2": 428e-6, 
-     "ch4": 1.94e-6, 
-     "n2o": 0.339e-6,
-     "n2": 0.7808,
-     "o2": 0.2095, 
-     "co": 0,
-    }
 
 def create_files():
-    ds = xr.concat([construct_profile(Ts = Ts, gas_concs = gas_concs) for Ts in np.arange(273, 305)], 
+    gas_concs = \
+        {"co2": 280e-6, 
+         "ch4": 1.94e-6, 
+         "n2o": 0.339e-6,
+         "n2": 0.7808,
+         "o2": 0.2095, 
+         "co": 0,
+        }
+    baseline = \
+      xr.concat([construct_profile(Ts = Ts, gas_concs = gas_concs) for Ts in np.arange(273, 305)], 
               dim = "col")
+
+    gas_concs["co2"] *= 2.
+    co22x = \
+      xr.concat([construct_profile(Ts = Ts, gas_concs = gas_concs) for Ts in np.arange(273, 305)], 
+              dim = "col")
+    
+    ds = xr.concat([baseline, co22x], dim = "variant")  
+    for v in ["co2", "ch4", "n2o", "co", "n2", "o2"]:
+        ds[v] = ds[v].mean(dim="col")
     ds["total_solar_irradiance"] = mpconst.earth_solar_irradiance.m
-    return ds
+    ds["expt_names"] = xr.DataArray(data = ["PI CO2", "2xCO2"], dims = ["variant"]) 
+    return ds.transpose("variant", "layer", "level", "col")
