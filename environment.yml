@@ -11,4 +11,5 @@ dependencies:
   - pyrte_rrtmgp >=0.2.5
   - netcdf4
   - metpy
+  - pandera >=0.31
   

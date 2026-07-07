@@ -20,10 +20,13 @@ Data roughly follow the conventions used in [pyRTE](https://github.com/earth-sys
 - boundary conditions are `surface_emissivity` and `surface_albedo` (both broadband) 
   and `solar_zenith_angle`; these depend on `col` and `variant`
 - composition variables are the molar mixing ratios of `h2o` and `o3` (spatially resolved as above). 
-   Variables `co2`, `ch4`, `n2o`,  co`, `n2`, `o2` are required as determined by RRTMGP
+   Variables `co2`, `ch4`, `n2o`,  `co`, `n2`, `o2` are required as determined by RRTMGP
 - any variable depending on `variant` is treated like a gas concentration (with the exception of `expt_names`)
-- `total_solar_irradiance` is provided as a scalar
-- Dimensions are ordered `col`, `layer`, `variant` (in Fortran notation) i.e. `col`s are contiguous in memory 
+- `total_solar_irradiance` is provided as a scalar in each data set
+- Dimensions are ordered `col`, `layer`, `variant` (in Fortran notation) i.e. `col`s are contiguous in memory
+
+Data may need to be replicated across dimensions where it doesn't vary; this is to ensure simplicity in the Fortran 
+interface. Conformance with these conventions is ensured with [pandera](https://pandera.readthedocs.io/en/stable/xarray_guide/index.html). 
 
 ## Use
 
