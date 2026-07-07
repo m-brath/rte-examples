@@ -16,7 +16,8 @@ https://confluence.ecmwf.int/display/CKDMIP/CKDMIP%3A+Correlated+K-Distribution+
 Data roughly follow the conventions used in [pyRTE](https://github.com/earth-system-radiation/pyRTE-RRTMGP)
 - state variables are `pres_layer`, `pres_level`, `temp_layer`, `temp_level`, `surface_temperature`
 - vertical dimensions are `layer` and `level`. There is one more `level` than `layer. 
-- state variables, `h2o`, and `o3` depend on  `col`, `layer`/`level`, and  `variant`
+- most state variables, `h2o`, and `o3` depend on  `col`, `layer`/`level`, and  `variant`, but
+- `pres_layer` and `pres_level`depend only on`col`and `layer`/`level to work around a bug in pyRTE
 - boundary conditions are `surface_emissivity` and `surface_albedo` (both broadband) 
   and `solar_zenith_angle`; these depend on `col` and `variant`
 - composition variables are the molar mixing ratios of `h2o` and `o3` (spatially resolved as above). 

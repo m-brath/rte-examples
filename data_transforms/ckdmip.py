@@ -39,9 +39,17 @@ def transform_files():
 		dims = ["variant"])
 	# 
 	# Set concentrations of well-mixed gases to the vertical mean
-	
+	#
 	for g in ["co2", "ch4", "n2o", "n2", "o2"]: 
 		f[g] = f[g].mean(dim=["layer", "col"])
+	#
+	# CKDMIP evaluation1 and evaluation2 have different pressure profiles 
+	#   At this writing pyRTE requires a single pressure profile across variants 
+	#   We'll just take the mean 
+	#
+	f["pres_layer"] = f["pres_layer"].mean(dim="variant")
+	f["pres_level"] = f["pres_level"].mean(dim="variant")
+	
 	f["co"] = xr.DataArray(data = 0.).broadcast_like(f["co2"])
 	f["surface_emissivity"] =  xr.DataArray(data = 1.).broadcast_like(f["surface_temperature"])
 	f["surface_albedo"] = xr.DataArray(data = 0.).broadcast_like(f["surface_temperature"])

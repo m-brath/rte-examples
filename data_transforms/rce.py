@@ -114,8 +114,10 @@ def create_files():
               dim = "col")
     
     ds = xr.concat([baseline, co22x], dim = "variant")  
+    ds["pres_layer"] =  ds["pres_layer"].isel(variant=0)
+    ds["pres_level"] =  ds["pres_level"].isel(variant=0)
     for v in ["co2", "ch4", "n2o", "co", "n2", "o2"]:
         ds[v] = ds[v].mean(dim="col")
     ds["total_solar_irradiance"] = mpconst.earth_solar_irradiance.m
-    ds["expt_names"] = xr.DataArray(data = ["PI CO2", "2xCO2"], dims = ["variant"]) 
+    ds["expt_names"] = xr.DataArray(data = ["PI CO2", "2xCO2"], dims = ["variant"])
     return ds.transpose("variant", "layer", "level", "col")

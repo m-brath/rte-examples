@@ -12,8 +12,8 @@ __all__ = ["rfmip", "ckdmip", "rce"]
 # Conventions 
 #
 _rte_example_vars = {
-        "pres_layer": pa.DataVar(dims=("variant", "layer", "col")),
-        "pres_level": pa.DataVar(dims=("variant", "level", "col")),
+        "pres_layer": pa.DataVar(dims=(           "layer", "col")),
+        "pres_level": pa.DataVar(dims=(           "level", "col")),
         "temp_layer": pa.DataVar(dims=("variant", "layer", "col")),
         "temp_level": pa.DataVar(dims=("variant", "level", "col")),
         "h2o":        pa.DataVar(dims=("variant", "layer", "col")),
